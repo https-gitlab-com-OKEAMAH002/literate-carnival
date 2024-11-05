@@ -1,0 +1,61 @@
+@import '../themes/themes';
+
+checkbox-sk {
+  display: block;
+  margin: 0.4em;
+}
+
+checkbox-sk span {
+  display: inline-block;
+}
+
+checkbox-sk label {
+  display: flex;
+  align-items: center;
+}
+
+checkbox-sk .icons {
+  color: var(--primary);
+  margin-right: 2px;
+  width: 20px;
+  height: 20px;
+
+  .checked {
+    display: none;
+  }
+  .unchecked {
+    display: inline-block;
+  }
+}
+
+checkbox-sk input {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+
+checkbox-sk input:checked + .icons {
+  .checked {
+    display: inline-block;
+  }
+  .unchecked {
+    display: none;
+  }
+}
+
+checkbox-sk input:focus + .icons {
+  outline: dashed 1px var(--outline);
+  outline-offset: 0px;
+}
+
+checkbox-sk:hover label {
+  color: var(--outline);
+}
+
+checkbox-sk[hidden] {
+  display: none;
+}
+
+checkbox-sk input:disabled + .icons {
+  color: var(--disabled);
+}

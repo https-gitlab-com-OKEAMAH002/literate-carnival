@@ -1,0 +1,543 @@
+/*
+
+//infra-sk/themes.scss is a common theme to be used across all Skia
+infrastructure applications so that we have a consistent look and feel.
+
+This file consists of several different layers of styling that can be opted
+into.
+
+
+# Layer 1
+
+The first layer is a consistent styling of all buttons, select controls, and
+tables, that are applied globally. You get this just by including the
+themes.scss file.
+
+
+# Layer 2
+
+The second layer is applied by adding the `body-sk` class to the <body> element
+of a page. This layer adds a large number of semantic CSS variables, whose names
+come from Material Design, that are to be used for styling elements. For
+example, if you have a panel that should look like a surface then it can be
+styled as:
+
+    my-panel {
+      background: var(--surface);
+      color: var(--on-surface);
+    }
+
+These semantic colors are supplied in two sets, one for light mode and another
+for dark mode. Dark mode is turned on by adding the `darkmode` class to an
+element, which triggers that element and all of its children to move to
+darkmode.
+
+The darkmode/lightmode is usually controlled via the `theme-chooser-sk` control
+which toggles the `darkmode` class on the body element and persists the user's
+choice in local storage.
+
+The `body-sk` class also adds more styling to many common elements such as
+buttons, links, and other elements-sk elements.
+
+The Material Design pallette was created from
+
+  https://www.figma.com/community/plugin/1020820278641129628/Material-Theme-Builder-1P
+
+using these two colors as the seeds:
+
+    primary: #005db7
+    secondary: #006e1c
+
+And then translate all the CSS variables it provides into the CSS variables of
+the existing theme structure. For example: `--md-sys-color-primary-light`
+becomes `--primary`.
+
+An alternate source for the algorithms used to generate the color pallette are
+here:
+
+    https://github.com/material-foundation/material-color-utilities
+
+# Layer 3
+
+The third layer is applied by adding the `font-sk` class to the body element of
+a page. This layer sets consistent font styling for a page, and adds `--font`
+and `--mono-font` CSS variables.
+
+To see all of the semantic names and their values working, along with and
+example elements in both dark and light mode, run:
+
+    $ ./demopage.sh infra-sk/modules/theme-chooser-sk/
+
+You can use the theme-chooser-sk element on that demo page to toggle between
+dark and light modes.
+
+Most applications should use `app-sk` as their base element, so you can also run
+
+   $ ./demopage.sh infra-sk/modules/app-sk/
+
+to see how these styles apply to title bars and sidebars.
+
+*/
+
+@import '../elements-sk/modules/themes/themes';
+@import '../elements-sk/modules/styles/buttons';
+@import '../elements-sk/modules/styles/select';
+@import '../elements-sk/modules/styles/table';
+
+@import 'tokens';
+
+.body-sk {
+  &.font-sk,
+  & .font-sk {
+    /* Typography */
+    --font: Roboto, Arial, 'Bitstream Vera Sans', sans-serif;
+    --mono-font: Roboto Mono, monospace;
+
+    * {
+      font-size: 14px;
+      font-family: var(--font);
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 16px 0;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 14px 0;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 12px 0;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 800;
+      margin: 10px 0;
+    }
+
+    h5 {
+      font-size: 12px;
+      font-weight: 600;
+      margin: 8px 0;
+    }
+
+    code,
+    pre {
+      font-family: var(--mono-font);
+    }
+  }
+
+  .icon-sk {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+  }
+
+  .large-icon-sk {
+    @extend .icon-sk;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+  }
+
+  --transparent-overlay: rgba(0, 0, 0, 0.5);
+
+  --failure-alpha: rgba(217, 95, 2, 0.8);
+  --failure: rgb(217, 95, 2);
+  --on-failure: var(--on-background);
+  --on-success: var(--on-background);
+  --on-warning: var(--on-background);
+  --success-alpha: rgba(102, 166, 30, 0.3);
+  --success: rgb(102, 166, 30);
+  --warning-alpha: rgb(255, 171, 64, 0.8);
+  --warning: rgb(255, 167, 38);
+  --unexpected: rgb(117, 112, 179);
+  --unexpected-alpha: rgba(117, 112, 179, 1);
+
+  --positive: #4caf50;
+  --negative: #f44336;
+  --untriaged: #8d6e63;
+
+  &.darkmode,
+  & .darkmode {
+    --transparent-overlay: rgba(255, 255, 255, 0.5);
+
+    --on-failure: var(--on-surface);
+    --on-success: var(--on-surface);
+    --on-warning: var(--on-surface);
+  }
+
+  a:active,
+  a:visited,
+  a:link {
+    color: var(--primary);
+  }
+
+  a:hover {
+    /* Distinguish hovering over links. */
+    color: var(--primary-variant);
+  }
+
+  .input-like,
+  input {
+    border: solid 1px var(--on-surface);
+    color: solid 1px var(--on-surface);
+    background: solid 1px var(--surface);
+    display: inline-block;
+  }
+
+  .button-like,
+  button {
+    align-items: center;
+    background: transparent;
+    border-radius: 4px;
+    border: solid 1px var(--outline);
+    box-shadow: none;
+    color: var(--primary);
+    display: inline-flex;
+    fill: var(--primary);
+    font-size: 14px;
+    height: 24px;
+    justify-content: center;
+    margin: 8px 2px;
+    min-width: auto;
+    padding: 0 12px;
+    text-align: center;
+    text-transform: none;
+
+    .icon-sk {
+      font-size: 20px;
+    }
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .button-like.large,
+  button.large {
+    height: 36px;
+    padding: 0 18px;
+
+    .icon-sk {
+      font-size: 24px;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .button-like:hover,
+  button.hover,
+  button:hover,
+  .button-like:focus,
+  button.focus,
+  button:focus {
+    opacity: 0.85;
+    outline: none;
+    background-color: var(--surface-1dp);
+  }
+
+  .button-like:disabled,
+  button:disabled {
+    opacity: 0.85;
+    background: var(--on-disabled);
+    color: var(--disabled);
+    fill: var(--disabled);
+  }
+
+  .button-like-action,
+  .button-like.action,
+  button.action {
+    color: var(--on-primary);
+    fill: var(--on-primary);
+    border: none;
+    background-color: var(--primary);
+  }
+
+  .button-like.action:hover,
+  button.action.hover,
+  button.action:hover {
+    @extend .button-like-action;
+    opacity: 0.85;
+  }
+
+  .button-like.action:disabled,
+  button.action.disabled,
+  button.action:disabled {
+    @extend .button-like-action;
+    opacity: 0.85;
+    background: var(--on-disabled);
+    color: var(--disabled);
+    fill: var(--disabled);
+  }
+
+  multi-select-sk:focus,
+  select-sk:focus {
+    outline: dashed 1px var(--on-surface);
+    outline-offset: -4px;
+  }
+
+  multi-select-sk {
+    border-radius: 4px;
+    border: solid 1px var(--outline);
+    background-color: var(--surface);
+    color: var(--on-surface);
+  }
+
+  multi-select-sk > * {
+    background-color: var(--surface);
+    border: solid 1px var(--surface);
+  }
+
+  multi-select-sk > [selected] {
+    background: var(--surface-2dp);
+  }
+
+  multi-select-sk > :hover {
+    border: var(--surface-2dp) solid 1px;
+  }
+
+  select,
+  select-sk {
+    border-radius: 4px;
+    border-color: var(--outline);
+  }
+
+  select-sk,
+  select-sk > * {
+    background-color: var(--surface);
+    color: var(--on-surface);
+  }
+
+  select-sk > [selected] {
+    background: var(--surface-2dp);
+  }
+
+  select-sk > * {
+    border: var(--surface) solid 1px;
+  }
+
+  select-sk > :hover {
+    border: var(--surface-2dp) solid 1px;
+  }
+
+  select-sk > :focus {
+    background-color: var(--surface-2dp);
+    transition: background-color 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  select-sk > [selected] {
+    background-color: var(--surface-2dp);
+  }
+
+  error-toast-sk toast-sk {
+    border-radius: 4px;
+    background: var(--error-container);
+    color: var(--on-error-container);
+    fill: var(--on-error-container);
+    padding: 8px;
+
+    button {
+      background: var(--error-container);
+      color: var(--on-error-container);
+      fill: var(--on-error-container);
+    }
+  }
+
+  toast-sk {
+    border-radius: 4px;
+    color: var(--on-hightlight);
+    fill: var(--on-hightlight);
+    border: none;
+    background-color: var(--primary-highlight);
+  }
+
+  error-toast-sk button {
+    margin: 0 0 0 8px;
+    padding: 4px;
+  }
+
+  tabs-sk {
+    display: inline-flex;
+
+    > button,
+    > .button-like {
+      border: none;
+      border-bottom: solid 4px transparent;
+      box-shadow: none;
+      border-radius: 0;
+      opacity: 0.85;
+      margin-bottom: 0px;
+      fill: var(--on-background);
+      color: var(--on-background);
+    }
+    > button.selected,
+    > .button-like.selected {
+      border-bottom: solid 4px var(--primary);
+      fill: var(--primary);
+      color: var(--primary);
+    }
+  }
+
+  tabs-panel-sk {
+    margin-top: 0;
+    border-top: solid 1px var(--on-background);
+  }
+
+  /*
+  This styling makes the `summary` element in a `details` element look like a
+  button. If `button` styles are updated then this styling should also be
+  updated to match.
+  */
+  details {
+    summary {
+      @extend .button-like;
+      cursor: pointer;
+      list-style: none;
+      margin: 8px 4px 8px 0;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary:active {
+      box-shadow: none;
+      transition: box-shadow 0.2s ease-in;
+    }
+  }
+
+  details[open] {
+    border: solid 1px var(--on-surface);
+    padding: 0 8px 16px 8px;
+    background: var(--surface);
+    margin: 8px 8px 8px 0;
+
+    summary {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+  }
+
+  details.expando {
+    display: block;
+    border: none;
+    margin: 0 8px;
+    padding: 8px;
+    background-color: var(--surface-1dp);
+    border-radius: 8px;
+
+    summary {
+      align-items: center;
+      border: none;
+      display: flex;
+      font-weight: 500;
+      justify-content: space-between;
+      margin: 8px 0;
+      padding: 0;
+      border-radius: 0;
+
+      expand-more-icon-sk {
+        display: inline-block;
+      }
+
+      expand-less-icon-sk {
+        display: none;
+      }
+    }
+  }
+
+  details.expando[open] {
+    summary {
+      expand-more-icon-sk {
+        display: none;
+      }
+
+      expand-less-icon-sk {
+        display: inline-block;
+      }
+    }
+  }
+
+  /*
+     The following styles are for scrollbars. There are some non-standard
+     looking styles because it is 2020 and there's still no standard way to
+     style scrollbars on a web page.
+
+     https://caniuse.com/#feat=css-scrollbar
+
+     There is currently an editor's draft for styling scrollbars:
+     https://drafts.csswg.org/css-scrollbars-1/, but it is only supported by
+     FireFox. So set that first.
+  */
+
+  * {
+    scrollbar-color: var(--surface-1dp) var(--background);
+  }
+
+  /* Turn on a 13x13 scrollbar */
+  ::-webkit-scrollbar {
+    width: 13px;
+    height: 13px;
+  }
+
+  /* Turn off single button up on top and down on bottom */
+  ::-webkit-scrollbar-button:start:decrement,
+  ::-webkit-scrollbar-button:end:increment,
+  ::-webkit-scrollbar-button:vertical:start:increment,
+  ::-webkit-scrollbar-button:vertical:end:decrement {
+    display: none;
+  }
+
+  /* Track below and above */
+  ::-webkit-scrollbar-track-piece {
+    background-color: var(--background);
+    border: solid 1px var(--surface-2dp);
+  }
+
+  /* The thumb itself */
+  ::-webkit-scrollbar-thumb {
+    border: solid 1px var(--on-surface);
+    background: var(--surface-1dp);
+    border-radius: 4px;
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+  }
+
+  td {
+    font-size: 100%;
+  }
+
+  th {
+    font-size: 100%;
+  }
+}

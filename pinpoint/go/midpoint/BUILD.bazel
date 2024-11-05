@@ -1,0 +1,35 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "midpoint",
+    srcs = [
+        "doc.go",
+        "midpoint.go",
+    ],
+    importpath = "go.skia.org/infra/pinpoint/go/midpoint",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/depot_tools/deps_parser",
+        "//go/gitiles",
+        "//go/skerr",
+        "//go/sklog",
+        "//pinpoint/proto/v1:proto",
+    ],
+)
+
+go_test(
+    name = "midpoint_test",
+    srcs = ["midpoint_test.go"],
+    embed = [":midpoint"],
+    deps = [
+        "//go/gitiles/mocks",
+        "//go/mockhttpclient",
+        "//go/skerr",
+        "//go/testutils",
+        "//go/vcsinfo",
+        "//pinpoint/proto/v1:proto",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

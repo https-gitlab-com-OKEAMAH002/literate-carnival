@@ -1,0 +1,74 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "builders",
+    srcs = ["builders.go"],
+    importpath = "go.skia.org/infra/perf/go/builders",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/deepequal/assertdeep",
+        "//go/skerr",
+        "//go/sklog",
+        "//go/sql/pool",
+        "//go/sql/pool/wrapper/timeout",
+        "//go/sql/schema",
+        "//perf/go/alerts",
+        "//perf/go/alerts/sqlalertstore",
+        "//perf/go/anomalygroup:store",
+        "//perf/go/anomalygroup/sqlanomalygroupstore",
+        "//perf/go/config",
+        "//perf/go/culprit:store",
+        "//perf/go/culprit/sqlculpritstore",
+        "//perf/go/file",
+        "//perf/go/file/dirsource",
+        "//perf/go/file/gcssource",
+        "//perf/go/filestore/gcs",
+        "//perf/go/git",
+        "//perf/go/graphsshortcut",
+        "//perf/go/graphsshortcut/graphsshortcutstore",
+        "//perf/go/regression",
+        "//perf/go/regression/sqlregression2store",
+        "//perf/go/regression/sqlregressionstore",
+        "//perf/go/shortcut",
+        "//perf/go/shortcut/sqlshortcutstore",
+        "//perf/go/sql",
+        "//perf/go/sql/expectedschema",
+        "//perf/go/subscription:store",
+        "//perf/go/subscription/sqlsubscriptionstore",
+        "//perf/go/tracestore",
+        "//perf/go/tracestore/sqltracestore",
+        "@com_github_jackc_pgx_v4//:pgx",
+        "@com_github_jackc_pgx_v4//pgxpool",
+        "@com_github_jackc_pgx_v4//stdlib",
+    ],
+)
+
+go_test(
+    name = "builders_test",
+    srcs = ["builders_test.go"],
+    data = ["//perf/migrations:cockroachdb"],
+    embed = [":builders"],
+    # Perf CockroachDB tests fail intermittently when running locally (i.e. not on RBE) due to tests
+    # running in parallel against the same CockroachDB instance:
+    #
+    #     pq: relation "schema_lock" already exists
+    #
+    # This is not an issue on RBE because each test target starts its own emulator instance.
+    #
+    # https://docs.bazel.build/versions/master/be/common-definitions.html#common-attributes-tests
+    flaky = True,
+    deps = [
+        "//go/emulators/cockroachdb_instance",
+        "//go/paramtools",
+        "//perf/go/config",
+        "//perf/go/file/dirsource",
+        "//perf/go/git/gittest",
+        "//perf/go/regression/regressiontest",
+        "//perf/go/shortcut/shortcuttest",
+        "//perf/go/sql/sqltest",
+        "//perf/go/types",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

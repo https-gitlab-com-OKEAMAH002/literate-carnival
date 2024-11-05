@@ -1,0 +1,105 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; This is the zone file for the skia.org domain. This file is used
+;;; to populate the zone records in the skia-public GCP project,
+;;; which is where our zone file is hosted.
+;;;
+;;; If you add or change any records in this file then apply them with:
+;;;
+;;;    $ ./update-zone-records.sh
+;;;
+;;; After you apply the changes run:
+;;;
+;;;    $./watch-for-zone-file-update.sh
+;;;
+;;; Once the changes have propogated update the tests in:
+;;;
+;;;    //skfe/go/dns
+;;;
+;;; And then run the tests to confirm the configuration is working
+;;; as intended.
+;;;
+;;;    bazelisk test //skfe/go/dns:dns_test
+;;;
+;;; See go/skia-dns for details on the registration of skia.org.
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+$TTL 3600     ; default TTL 1 hour
+
+;;; MX Records
+@                    300  IN MX 0 smtp.google.com.
+
+;;; SSL/TLS certificates policy
+;;; Certification Authority Authorization (CAA) records are
+;;; used to specify which certificate authorities (CAs) are
+;;; allowed to issue certificates for a domain.
+;;; The record below restricts certificate issuance to
+;;; Google CA only.
+
+@           86400 IN CAA 0 issue "pki.goog"
+
+;;;; This record is required to validate domains for
+;;;; certificate issuance.
+
+_validate_domain 3600 IN CNAME _validate_domain.pki.goog.
+
+;;; These apps have been migrated to the skia-infra-public project.
+androidx2-perf           300      IN A 34.110.212.89
+autoroll                 300      IN A 34.110.212.89
+autoroll-google3         300      IN A 34.110.212.89
+bugs-central             300      IN A 34.110.212.89
+cabe                     300      IN A 34.110.212.89
+codesize                 300      IN A 34.110.212.89
+ct                       300      IN A 34.110.212.89
+ct-staging               300      IN A 34.110.212.89
+debugger                 300      IN A 34.110.212.89
+demos                    300      IN A 34.110.212.89
+envoy-admin-panel-public 300      IN A 34.110.212.89
+jsfiddle                 300      IN A 34.110.212.89
+leasing                  300      IN A 34.110.212.89
+npm                      300      IN A 34.110.212.89
+perf-infra-public-cdb    300      IN A 34.110.212.89
+scrap                    300      IN A 34.110.212.89
+shaders                  300      IN A 34.110.212.89
+skcq                     300      IN A 34.110.212.89
+skottie                  300      IN A 34.110.212.89
+status                   300      IN A 34.110.212.89
+task-driver              300      IN A 34.110.212.89
+task-scheduler           300      IN A 34.110.212.89
+task-scheduler-internal  300      IN A 34.110.212.89
+task-scheduler-staging   300      IN A 34.110.212.89
+temporal-ui              300      IN A 34.110.212.89
+
+;;; Master A record. Hosted in the GCP project skia-public.
+@         300      IN A 35.201.76.220
+
+;;; SPF record for domains that send email using Dasher/Google Apps.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+@          3600      IN TXT "v=spf1 include:_spf.google.com ~all"
+
+;;; DMARC policy indicating email received with a From address of
+;;; this domain that do not pass SPF or DKIM checks should be
+;;; rejected.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+_dmarc       300     IN  TXT "v=DMARC1; p=reject; rua=mailto:mailauth-reports@google.com"
+
+;;; sendgrid
+
+em258         300 IN CNAME u26644806.wl057.sendgrid.net.
+s1._domainkey 300 IN CNAME s1.domainkey.u26644806.wl057.sendgrid.net.
+s2._domainkey 300 IN CNAME s2.domainkey.u26644806.wl057.sendgrid.net.
+url9405       300 IN CNAME sendgrid.net.
+26644806      300 IN CNAME sendgrid.net.
+
+;;; Buganizer custom domains for Skia.
+issues     300     IN CNAME www3.l.google.com.
+g-issues   300     IN CNAME uberproxy.l.google.com.
+
+;;; CNAME all the hosts for this domain.
+*          3600    IN CNAME skia.org.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; End of skia.org.zone
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

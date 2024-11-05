@@ -1,0 +1,185 @@
+# Copyright 2016 The Bazel Authors. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# If we prefix the directories with an underscore then they get ignored by Go tools.
+# We are forced to do this until https://github.com/golang/go/issues/42965 is fixed.
+build --symlink_prefix=_bazel_
+
+# test inherits from build, so do not add test flags because that
+# ends up invalidating the cache. https://github.com/bazelbuild/bazel/issues/13186
+# test  --symlink_prefix=_bazel_
+
+build --workspace_status_command=bazel/get_workspace_status.sh
+
+# Tags such as no-remote and no-cache have no effect without this. See
+# https://github.com/bazelbuild/bazel/issues/8830.
+build --experimental_allow_tags_propagation
+
+# Pipe through the host system's *_EMULATOR_HOST environment variables to Bazel tests.
+#
+# We unset said environment variables under RBE because emulator tests under RBE spin up their own
+# emulator instances.
+build --test_env=BIGTABLE_EMULATOR_HOST
+build --test_env=COCKROACHDB_EMULATOR_HOST
+build --test_env=DATASTORE_EMULATOR_HOST
+build --test_env=FIRESTORE_EMULATOR_HOST
+build --test_env=PUBSUB_EMULATOR_HOST
+build:remote --test_env=BIGTABLE_EMULATOR_HOST=
+build:remote --test_env=COCKROACHDB_EMULATOR_HOST=
+build:remote --test_env=DATASTORE_EMULATOR_HOST=
+build:remote --test_env=FIRESTORE_EMULATOR_HOST=
+build:remote --test_env=PUBSUB_EMULATOR_HOST=
+
+# Pipe through GOOGLE_APPLICATION_CREDENTIALS for local tests. This breaks test hermeticity, so use
+# judiciously. Most tests that depend on this variable should probably tagged with "no-remote".
+#
+# We clear this variable under build:remote because if set, it will most likely contain a path to a
+# file in the host system, which could potentially point to a nonexisting file within the RBE
+# container when Bazel is invoked with --config=remote.
+build --test_env=GOOGLE_APPLICATION_CREDENTIALS
+build:remote --test_env=GOOGLE_APPLICATION_CREDENTIALS=
+
+# RBE-only environment variable for tests to detect whether they're running locally or on RBE.
+build:remote --test_env=BAZEL_REMOTE=true
+
+# Update the PATH environment variable under RBE to include the locations of various binaries
+# installed in our custom RBE container toolchain image.
+build:remote --test_env=PATH=/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin
+
+# Rough equivalent of CGO_ENABLED=0 under Bazel. Produces statically-linked Go binaries, and
+# filters out cgo code.
+#
+# See https://github.com/bazelbuild/rules_go/blob/master/go/modes.rst#id6.
+#
+# This prevents errors due to missing dynamic libraries, e.g. when running Bazel-built binaries
+# inside Docker containers based on the gcr.io/skia-public/basealpine image.
+build --@io_bazel_rules_go//go/config:pure
+
+# Depending on how many machines are in the remote execution instance, setting
+# this higher can make builds faster by allowing more jobs to run in parallel.
+# Setting it too high can result in jobs that timeout, however, while waiting
+# for a remote machine to execute them.
+build:remote --jobs=50
+
+# Set several flags related to specifying the platform, toolchain and java
+# properties.
+# These flags should only be used as is for the rbe-ubuntu16-04 container
+# and need to be adapted to work with other toolchain containers.
+build:remote --host_javabase=//bazel/rbe/generated/java:jdk
+build:remote --javabase=//bazel/rbe/generated/java:jdk
+build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --crosstool_top=//bazel/rbe/generated/cc:toolchain
+build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+# Platform flags:
+# The toolchain container used for execution is defined in the target indicated
+# by "extra_execution_platforms", "host_platform" and "platforms".
+# More about platforms: https://docs.bazel.build/versions/master/platforms.html
+build:remote --extra_toolchains=//bazel/rbe/generated/config:cc-toolchain
+build:remote --extra_execution_platforms=//:rbe_custom_platform
+build:remote --host_platform=//:rbe_custom_platform
+build:remote --platforms=//:rbe_custom_platform
+
+# Starting with Bazel 0.27.0 strategies do not need to be explicitly
+# defined. See https://github.com/bazelbuild/bazel/issues/7480
+build:remote --define=EXECUTOR=remote
+
+# Enable remote execution so actions are performed on the remote systems.
+build:remote --remote_executor=grpcs://remotebuildexecution.googleapis.com
+
+# Enforce stricter environment rules, which eliminates some non-hermetic
+# behavior and therefore improves both the remote cache hit rate and the
+# correctness and repeatability of the build.
+build:remote --incompatible_strict_action_env=true
+
+# Set a higher timeout value, just in case.
+build:remote --remote_timeout=3600
+
+# Enable authentication. This will pick up application default credentials.
+build:remote --google_default_credentials=true
+
+# Use the RBE instance on the skia-infra-rbe GCP project.
+build:remote --remote_instance_name projects/skia-infra-rbe/instances/default_instance
+
+# Skip building the runfiles tree on the local system when building on RBE. This can be very slow,
+# and is unnecessary for RBE builds because remote build actions will generate their own runfile
+# tree anyway. See b/111951625.
+build:remote --nobuild_runfile_links
+
+# Note that running remote builds requires a service account key with the correct permissions. See
+# instructions in //BAZEL_CHEATSHEET.md.
+
+# Alias to build configurations below. This makes configuring things from
+# the command line easier.
+build --flag_alias=with_local_debugger=no//debugger-app/wasm_libs:use_debugger_from_container
+build --flag_alias=with_local_wasm=no//jsfiddle/wasm_libs:use_libraries_from_container
+build --flag_alias=shaders_local_canvaskit=no//shaders/wasm_libs:use_canvaskit_from_container
+build --flag_alias=skottie_local_canvaskit=no//skottie/wasm_libs:use_canvaskit_from_container
+
+# The rules_ts ruleset requires specifying a criteria for checking types in library dependencies.
+# The below settings force rules_ts to honor the --skipLibCheck tsc flag specified in
+# tsconfig.json (see https://www.typescriptlang.org/tsconfig#skipLibCheck).
+build --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+fetch --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+query --@aspect_rules_ts//ts:skipLibCheck=honor_tsconfig
+
+# Import user-specific Bazel configuration file if it exists. This file is gitignored.
+#
+# One of the purposes of this file is to override the "mayberemote" configuration so that it
+# actually produces remote builds on RBE. See below for more on the "mayberemote" configuration.
+try-import %workspace%/bazel/user/bazelrc
+
+# The "mayberemote" config is used for scripted actions that *may* perform RBE builds with Bazel.
+# For example, take the following Makefile:
+#
+#     .PHONY: foo
+#     foo:
+#         bazel build --config=mayberemote //path/to:foo
+#
+# By default, --config=mayberemote does nothing, i.e. the above Makefile is equivalent to:
+#
+#     .PHONY: foo
+#     foo:
+#         bazel build //path/to:foo
+#
+# If you want --config=mayberemote to be equivalent to --config=remote, please add the following
+# line to your //bazel/user/bazelrc file:
+#
+#     build:mayberemote --config=remote
+#
+# Then, the above Makefile will be equivalent to:
+#
+#     .PHONY: foo
+#     foo:
+#         bazel build --config=remote //path/to:foo
+#
+# Some good example uses of --config=mayberemote are the "gazelle" and "buildifier" Make targets
+# defined in //Makefile, which some Skia Infrastructure engineers use on an almost daily basis.
+#
+# Rationale:
+#
+#  - Makefiles, or any other scripted action, should never use --config=remote directly, as such
+#    Bazel invocations are impossible to run for users without RBE credentials, users working
+#    offline (e.g. on an airplane without WiFi), etc.
+#
+#  - Scripted actions should not force local builds either (unless absolutely necessary), as that
+#    causes Bazel to discard its analysis cache if the user normally runs remote builds, which
+#    makes Bazel take longer.
+#
+#  - As an alternative, a user could make all builds remote by default by adding a line such as
+#    "build --config=remote" to their //bazel/user/bazelrc file. However, this is limiting because
+#    there might be legitimate cases where one would want to run a local build.
+#
+# Bazel complains if --config=mayberemote is undefined, so a default "no-op" definition is needed.
+build:mayberemote --color=auto # Does nothing: --color is "auto" by default.

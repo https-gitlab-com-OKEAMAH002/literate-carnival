@@ -1,0 +1,70 @@
+load("//infra-sk:index.bzl", "karma_test", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":pivot-table-sk-demo",
+)
+
+sk_element(
+    name = "pivot-table-sk",
+    sass_deps = [
+        "//perf/modules/themes:themes_sass_lib",
+    ],
+    sass_srcs = ["pivot-table-sk.scss"],
+    sk_element_deps = [
+        "//infra-sk/modules/paramset-sk",
+        "//elements-sk/modules/icons/arrow-drop-down-icon-sk",
+        "//elements-sk/modules/icons/arrow-drop-up-icon-sk",
+        "//elements-sk/modules/icons/sort-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+        "//perf/modules/pivotutil:index_ts_lib",
+        "//perf/modules/paramtools:index_ts_lib",
+        "//perf/modules/const:const_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:query_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "pivot-table-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "pivot-table-sk-demo",
+    html_file = "pivot-table-sk-demo.html",
+    sk_element_deps = [":pivot-table-sk"],
+    ts_deps = [
+        "//perf/modules/json:index_ts_lib",
+        "//infra-sk/modules:dom_ts_lib",
+    ],
+    ts_entry_point = "pivot-table-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "pivot-table-sk_puppeteer_test",
+    src = "pivot-table-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+karma_test(
+    name = "pivot-table-sk_test",
+    src = "pivot-table-sk_test.ts",
+    deps = [
+        ":pivot-table-sk",
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//infra-sk/modules:dom_ts_lib",
+        "//infra-sk/modules:test_util_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+    ],
+)

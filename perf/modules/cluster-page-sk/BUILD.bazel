@@ -1,0 +1,67 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_element(
+    name = "cluster-page-sk",
+    sass_deps = [
+        "//perf/modules/themes:themes_sass_lib",
+        "//elements-sk/modules/styles:buttons_sass_lib",
+    ],
+    sass_srcs = ["cluster-page-sk.scss"],
+    sk_element_deps = [
+        "//infra-sk/modules/paramset-sk",
+        "//infra-sk/modules/query-sk",
+        "//infra-sk/modules/sort-sk",
+        "//perf/modules/algo-select-sk",
+        "//perf/modules/cluster-summary2-sk",
+        "//perf/modules/commit-detail-panel-sk",
+        "//perf/modules/commit-detail-picker-sk",
+        "//perf/modules/day-range-sk",
+        "//perf/modules/query-count-sk",
+        "//elements-sk/modules/checkbox-sk",
+        "//elements-sk/modules/spinner-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//perf/modules/errorMessage:index_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+        "//perf/modules/progress:progress_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:hintable_ts_lib",
+        "//infra-sk/modules:jsonorthrow_ts_lib",
+        "//infra-sk/modules:query_ts_lib",
+        "//infra-sk/modules:statereflector_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "cluster-page-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "cluster-page-sk-demo",
+    html_file = "cluster-page-sk-demo.html",
+    sk_element_deps = [
+        ":cluster-page-sk",
+        "//elements-sk/modules/error-toast-sk",
+    ],
+    ts_deps = ["//:node_modules/fetch-mock"],
+    ts_entry_point = "cluster-page-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "cluster-page-sk_puppeteer_test",
+    src = "cluster-page-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":cluster-page-sk-demo",
+)

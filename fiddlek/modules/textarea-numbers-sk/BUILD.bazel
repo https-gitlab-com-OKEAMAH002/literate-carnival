@@ -1,0 +1,84 @@
+load("//infra-sk:index.bzl", "copy_file_from_npm_pkg", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":textarea-numbers-sk-demo",
+)
+
+# Under rules_js (https://github.com/aspect-build/rules_js), we cannot refer to files inside NPM
+# packages directly. Instead, we must create local copies of those files. See the
+# copy_file_from_npm_pkg macro documentation for details.
+copy_file_from_npm_pkg(
+    name = "codemirror5_foldgutter_css",
+    src = "addon/fold/foldgutter.css",
+    out = "codemirror5_foldgutter.css",
+    npm_package_name = "codemirror5",
+)
+
+copy_file_from_npm_pkg(
+    name = "codemirror5_codemirror_css",
+    src = "lib/codemirror.css",
+    out = "codemirror5_codemirror.css",
+    npm_package_name = "codemirror5",
+)
+
+copy_file_from_npm_pkg(
+    name = "codemirror5_base16-dark_css",
+    src = "theme/base16-dark.css",
+    out = "codemirror5_base16-dark.css",
+    npm_package_name = "codemirror5",
+)
+
+copy_file_from_npm_pkg(
+    name = "codemirror5_base16-light_css",
+    src = "theme/base16-light.css",
+    out = "codemirror5_base16-light.css",
+    npm_package_name = "codemirror5",
+)
+
+sk_element(
+    name = "textarea-numbers-sk",
+    sass_deps = [
+        "//fiddlek/modules/themes:themes_sass_lib",
+    ],
+    sass_srcs = [
+        "textarea-numbers-sk.scss",
+        "codemirror5_foldgutter.css",  # keep
+        "codemirror5_codemirror.css",  # keep
+        "codemirror5_base16-dark.css",  # keep
+        "codemirror5_base16-light.css",  # keep
+    ],
+    sk_element_deps = ["//infra-sk/modules/theme-chooser-sk"],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/@types/codemirror5",
+        "//:node_modules/codemirror5",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "textarea-numbers-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "textarea-numbers-sk-demo",
+    html_file = "textarea-numbers-sk-demo.html",
+    sk_element_deps = [
+        ":textarea-numbers-sk",
+        "//infra-sk/modules/theme-chooser-sk",
+    ],
+    ts_entry_point = "textarea-numbers-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "textarea-numbers-sk_puppeteer_test",
+    src = "textarea-numbers-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)

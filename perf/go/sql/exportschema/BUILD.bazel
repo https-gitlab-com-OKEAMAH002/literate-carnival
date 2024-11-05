@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "exportschema_lib",
+    srcs = ["main.go"],
+    importpath = "go.skia.org/infra/perf/go/sql/exportschema",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/sklog",
+        "//go/sql/schema/exportschema:exportschema_lib",
+        "//perf/go/sql",
+    ],
+)
+
+go_binary(
+    name = "exportschema",
+    embed = [":exportschema_lib"],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,40 @@
+@use './theme-chooser-sk.scss';
+@import '../../themes';
+
+.body-sk {
+  app-sk > aside {
+    padding: 16px;
+  }
+
+  theme-chooser-sk {
+    cursor: pointer;
+  }
+
+  .container-example {
+    padding: 16px;
+  }
+
+  main {
+    background-color: var(--background);
+  }
+
+  .columns {
+    display: flex;
+  }
+
+  section {
+    margin: 0 8px;
+  }
+
+  pre {
+    color: green;
+    margin-left: 24px;
+  }
+
+  section.group {
+    background-color: var(--surface);
+    padding: 16px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
+}

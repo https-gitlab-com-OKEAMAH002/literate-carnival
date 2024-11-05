@@ -1,0 +1,48 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":domain-picker-sk-demo",
+)
+
+sk_element(
+    name = "domain-picker-sk",
+    sass_deps = [
+        "//elements-sk/modules/styles:buttons_sass_lib",
+        "//elements-sk/modules:colors_sass_lib",
+    ],
+    sass_srcs = ["domain-picker-sk.scss"],
+    sk_element_deps = [
+        "//perf/modules/calendar-input-sk",
+        "//elements-sk/modules/radio-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "domain-picker-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "domain-picker-sk-demo",
+    html_file = "domain-picker-sk-demo.html",
+    sk_element_deps = [":domain-picker-sk"],
+    ts_entry_point = "domain-picker-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "domain-picker-sk_puppeteer_test",
+    src = "domain-picker-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)

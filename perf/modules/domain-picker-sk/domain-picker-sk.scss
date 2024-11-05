@@ -1,0 +1,43 @@
+@import '../../../elements-sk/modules/styles/buttons';
+@import '../../../elements-sk/modules/colors';
+
+domain-picker-sk {
+  display: block;
+
+  .controls {
+    justify-content: flex-end;
+    display: flex;
+  }
+
+  .description {
+    text-transform: initial;
+  }
+
+  p {
+    font-style: italic;
+  }
+
+  .ranges > label {
+    display: block;
+    margin: 4px;
+  }
+
+  .ranges > label > span.prefix {
+    display: inline-block;
+    width: 50px;
+  }
+
+  .ranges > label > input {
+    color: var(--on-surface);
+    background: var(--surface-1dp);
+    width: 64px;
+  }
+
+  input[type='number'] {
+    width: 64px; // Because Safari has bad default sizing.
+  }
+
+  calendar-input-sk {
+    display: inline-block;
+  }
+}

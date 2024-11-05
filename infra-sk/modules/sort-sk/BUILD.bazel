@@ -1,0 +1,58 @@
+load("//infra-sk:index.bzl", "karma_test", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":sort-sk-demo",
+)
+
+sk_element(
+    name = "sort-sk",
+    sass_deps = ["//infra-sk:themes_sass_lib"],
+    sass_srcs = ["sort-sk.scss"],
+    sk_element_deps = [
+        "//elements-sk/modules/icons/arrow-drop-down-icon-sk",
+        "//elements-sk/modules/icons/arrow-drop-up-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:dom_ts_lib",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "sort-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "sort-sk-demo",
+    html_file = "sort-sk-demo.html",
+    sass_deps = ["//elements-sk/modules/styles:buttons_sass_lib"],
+    scss_entry_point = "sort-sk-demo.scss",
+    sk_element_deps = [":sort-sk"],
+    ts_deps = ["//infra-sk/modules:dom_ts_lib"],
+    ts_entry_point = "sort-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "sort-sk_puppeteer_test",
+    src = "sort-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+karma_test(
+    name = "sort-sk_test",
+    src = "sort-sk_test.ts",
+    deps = [
+        ":sort-sk",
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//infra-sk/modules:dom_ts_lib",
+    ],
+)

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://go.skia.org/infra/perf/go/ingest/format/format",
+  "$ref": "#/$defs/Format",
+  "$defs": {
+    "Format": {
+      "properties": {
+        "version": {
+          "type": "integer"
+        },
+        "git_hash": {
+          "type": "string"
+        },
+        "issue": {
+          "type": "string"
+        },
+        "patchset": {
+          "type": "string"
+        },
+        "key": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "results": {
+          "items": {
+            "$ref": "#/$defs/Result"
+          },
+          "type": "array"
+        },
+        "links": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "version",
+        "git_hash",
+        "results"
+      ]
+    },
+    "Result": {
+      "properties": {
+        "key": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "measurement": {
+          "type": "number"
+        },
+        "measurements": {
+          "patternProperties": {
+            ".*": {
+              "items": {
+                "$ref": "#/$defs/SingleMeasurement"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "key"
+      ]
+    },
+    "SingleMeasurement": {
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "measurement": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "value",
+        "measurement"
+      ]
+    }
+  }
+}

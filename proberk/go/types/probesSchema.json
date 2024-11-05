@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://go.skia.org/infra/proberk/go/types/probes",
+  "$ref": "#/$defs/Probes",
+  "$defs": {
+    "Probe": {
+      "properties": {
+        "urls": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "method": {
+          "type": "string"
+        },
+        "expected": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "body": {
+          "type": "string"
+        },
+        "mimetype": {
+          "type": "string"
+        },
+        "responsetest": {
+          "type": "string"
+        },
+        "authenticated": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "urls",
+        "method",
+        "expected",
+        "mimetype"
+      ]
+    },
+    "Probes": {
+      "patternProperties": {
+        ".*": {
+          "$ref": "#/$defs/Probe"
+        }
+      },
+      "type": "object"
+    }
+  }
+}

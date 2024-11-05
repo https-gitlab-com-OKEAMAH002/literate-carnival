@@ -1,0 +1,196 @@
+syntax = "proto3";
+
+package anomalygroup.v1;
+
+option go_package = "go.skia.org/infra/perf/go/anomalygroup/proto/v1";
+
+// APIs for anomaly group
+service AnomalyGroupService {
+    // Create a new anomaly group based on a set of criterias.
+    // Avoid binding it to a specific regression.
+    rpc CreateNewAnomalyGroup(
+        CreateNewAnomalyGroupRequest) returns (CreateNewAnomalyGroupResponse) {
+    }
+
+    // Read info for an anomaly group.
+    rpc LoadAnomalyGroupByID(
+        LoadAnomalyGroupByIDRequest) returns (LoadAnomalyGroupByIDResponse) {
+    }
+
+    // Update a given anomaly group.
+    rpc UpdateAnomalyGroup(
+        UpdateAnomalyGroupRequest) returns (UpdateAnomalyGroupResponse) {
+    }
+
+    // Find matching anomaly groups based on the criterias.
+    // (e.g., from a newly found anomaly).
+    rpc FindExistingGroups(
+        FindExistingGroupsRequest) returns (FindExistingGroupsResponse) {
+    }
+
+    rpc FindTopAnomalies(
+        FindTopAnomaliesRequest) returns (FindTopAnomaliesResponse) {
+    }
+}
+
+// Request object for CreateNewAnomalyGroup
+message CreateNewAnomalyGroupRequest {
+    // The name of the subscription in sheriff config
+    string subscription_name = 1;
+    // The revision of the subscription
+    string subscription_revision = 2;
+    // The domain of the test to group (The value of 'master' in alert config.)
+    string domain = 3;
+    // The benchmark of the test to group
+    string benchmark = 4;
+    // The current start commit position of the group
+    int64 start_commit = 5;
+    // The current end commit position of the group
+    int64 end_commit = 6;
+    // The action of the group to take.
+    GroupActionType action = 7;
+}
+
+// Response object for CreateNewAnomalyGroup
+message CreateNewAnomalyGroupResponse {
+    // The newly created anomaly group ID.
+    string anomaly_group_id = 1;
+}
+
+// Request object for LoadAnomalyGroupByID
+message LoadAnomalyGroupByIDRequest {
+    // The ID of the anomaly group to read from
+    string anomaly_group_id = 1;
+}
+
+// Response object for LoadAnomalyGroupByID
+message LoadAnomalyGroupByIDResponse {
+    // The anomaly group object
+    AnomalyGroup anomaly_group = 1;
+}
+
+// Request object for UpdateAnomalyGroup
+message UpdateAnomalyGroupRequest {
+    // The ID of the anomaly group to update
+    string anomaly_group_id = 1;
+
+    // The anomaly ID to append to the anomaly list.
+    string anomaly_id = 2;
+
+    // The biesction ID to add to the anomaly group.
+    // This should be populated only when the action value is BISECT.
+    string bisection_id = 3;
+
+    // The issue ID to add to the anomaly group.
+    // This should be populated only when the action value is REPORT.
+    string issue_id = 4;
+
+    // The culprit IDs correlated to the group.
+    // Culprits are found by a bisection job. This should be populated
+    // only when the action value is BISECT and the bisection_id exists.
+    repeated string culprit_ids = 5;
+}
+
+// Response object for UpdateAnomalyGroup
+message UpdateAnomalyGroupResponse {
+}
+
+// Request object for FindExistingGroups
+message FindExistingGroupsRequest {
+    // The subscription name from the alert config, from which the
+    // anomaly is detected.
+    string subscription_name = 1;
+    // The revision of the subscription
+    string subscription_revision = 2;
+    // The action value from the alert config.
+    GroupActionType action = 3;
+    // The previous commit position before the anomaly's data point.
+    int64 start_commit = 4;
+    // The commit position before the anomaly's data point.
+    int64 end_commit = 5;
+    // The test path from the anomaly.
+    string test_path = 6;
+}
+
+// Response object for FindExistingGroups
+message FindExistingGroupsResponse {
+    // A list of anomaly groups which an anomaly can be added to.
+    repeated AnomalyGroup anomaly_groups = 1;
+}
+
+// Request object for FindTopAnomaliesRequest
+message FindTopAnomaliesRequest {
+    string anomaly_group_id = 1;
+    int64 limit = 2;
+}
+
+// // Response object for FindTopAnomaliesResponse
+message FindTopAnomaliesResponse {
+    repeated Anomaly anomalies = 1;
+}
+
+// Simplified format for an anomaly group, which should be sufficient
+// in the following use cases:
+// 1. provide a list of anomalies for filing a bug.
+// 2. provide the most significant anomaly to launch a bisection.
+// 3. for the new anomaly to be added in, and decide whether the new anomaly
+//    needs to be added to an existing bug.
+message AnomalyGroup {
+    // The ID of the anomaly group.
+    string group_id = 1;
+    // The action to take for the anomaly group.
+    GroupActionType group_action = 2;
+    // The anomalies added to this group.
+    repeated string anomaly_ids = 3;
+    // The culprits associated to this group.
+    repeated string culprit_ids = 4;
+    // The reported issue associated to this group.
+    int64 reported_issue_id = 5;
+    // The subscription name this anomaly group belongs to
+    string subsciption_name = 6;
+    // The subscription revision this anomaly group belongs to
+    string subscription_revision = 7;
+}
+
+// Regression object in a format used for anomaly group actions,
+// including filing a new bug and triggering a new bisection job.
+message Anomaly {
+    // the start commit position of the detected anomaly
+    int64 start_commit = 1;
+    // the end commit position of the detected anomaly
+    int64 end_commit = 2;
+    // the paramset from the regression detected in Skia. The parameters
+    // are used in Skia alerts to define which tests to apply the deteciton
+    // rules.
+    // In chromeperf's context, it should include the following keys:
+    //  - bot:
+    //      the name of the bot (a.k.a, 'builder' in waterfall, and
+    //      'configuration' in pinpoint job page.)
+    //  - benchmark:
+    //      the name of the benchmark
+    //  - story:
+    //      the name of the story (a.k.a., test)
+    //  - measurement:
+    //      the metric to look at. (a.k.a., 'test' in skia query ui,
+    //      and 'chart' in pinpoint job page)
+    //  - stat:
+    //      the aggregation method on the data points
+    map<string, string> paramset = 3;
+    // indicate the direction towards which the change should be
+    // considered as regression.
+    // The possible values are: UP, DOWN or UNKNOWN
+    string improvement_direction = 4;
+}
+
+
+// The action to take on a certain group. It is defined in the Alert config.
+enum GroupActionType {
+    // No action will be taken. It is used for backward compatibility
+    // for the existing Alerts before grouping is introduced.
+    NOACTION = 0;
+    // File a bug with a list of anomalies.
+    REPORT = 1;
+    // Launch a bisection job on the most signification anomaly, in order to
+    // find the culprit commit.
+    BISECT = 2;
+}

@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "executil",
+    srcs = ["executil.go"],
+    importpath = "go.skia.org/infra/go/executil",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "executil_test",
+    srcs = ["executil_test.go"],
+    deps = [
+        ":executil",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

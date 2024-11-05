@@ -1,0 +1,13 @@
+@import '../../../infra-sk/themes.scss';
+
+test-src-sk {
+  .output {
+    margin: 0;
+    padding: 0;
+    background: var(--in-primary);
+    color: var(--primary);
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 13px;
+  }
+}

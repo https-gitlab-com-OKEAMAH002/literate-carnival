@@ -1,0 +1,6 @@
+{
+    "url": "{{ metadata_url }}",
+    "headers": {
+        "Metadata-Flavor": "Google"
+    }
+}

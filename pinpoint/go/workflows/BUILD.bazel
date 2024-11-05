@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "workflows",
+    srcs = ["workflows.go"],
+    importpath = "go.skia.org/infra/pinpoint/go/workflows",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pinpoint/go/compare",
+        "//pinpoint/go/midpoint",
+        "//pinpoint/go/run_benchmark",
+        "//pinpoint/proto/v1:proto",
+        "@org_chromium_go_luci//buildbucket/proto",
+        "@org_chromium_go_luci//swarming/proto/api_v2",
+    ],
+)
+
+go_test(
+    name = "workflows_test",
+    srcs = ["workflows_test.go"],
+    embed = [":workflows"],
+    deps = [
+        "//pinpoint/go/compare",
+        "//pinpoint/proto/v1:proto",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

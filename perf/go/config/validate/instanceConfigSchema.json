@@ -1,0 +1,446 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://go.skia.org/infra/perf/go/config/instance-config",
+  "$ref": "#/$defs/InstanceConfig",
+  "$defs": {
+    "AnomalyConfig": {
+      "properties": {
+        "settling_time": {
+          "$ref": "#/$defs/DurationAsString"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "AuthConfig": {
+      "properties": {
+        "header_name": {
+          "type": "string"
+        },
+        "email_regex": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "header_name"
+      ]
+    },
+    "CacheConfig": {
+      "properties": {
+        "memcached_servers": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "memcached_servers",
+        "namespace"
+      ]
+    },
+    "CulpritNotifyConfig": {
+      "properties": {
+        "notifications": {
+          "type": "string"
+        },
+        "issue_tracker_api_key_secret_project": {
+          "type": "string"
+        },
+        "issue_tracker_api_key_secret_name": {
+          "type": "string"
+        },
+        "culprit_subject": {
+          "type": "string"
+        },
+        "culprit_body": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "notifications"
+      ]
+    },
+    "DataStoreConfig": {
+      "properties": {
+        "datastore_type": {
+          "type": "string"
+        },
+        "connection_string": {
+          "type": "string"
+        },
+        "tile_size": {
+          "type": "integer"
+        },
+        "cache": {
+          "$ref": "#/$defs/CacheConfig"
+        },
+        "enable_follower_reads": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "datastore_type",
+        "connection_string",
+        "tile_size"
+      ]
+    },
+    "DurationAsString": {
+      "type": "string",
+      "title": "Duration",
+      "description": "A golang time.Duration serialized as a string."
+    },
+    "Favorites": {
+      "properties": {
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/FavoritesSectionConfig"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "sections"
+      ]
+    },
+    "FavoritesSectionConfig": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/FavoritesSectionLinkConfig"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "name",
+        "links"
+      ]
+    },
+    "FavoritesSectionLinkConfig": {
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "text",
+        "href",
+        "description"
+      ]
+    },
+    "GitRepoConfig": {
+      "properties": {
+        "git_auth_type": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "start_commit": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "dir": {
+          "type": "string"
+        },
+        "file_change_marker": {
+          "type": "string"
+        },
+        "debounce_commit_url": {
+          "type": "boolean"
+        },
+        "commit_url": {
+          "type": "string"
+        },
+        "commit_number_regex": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "provider",
+        "url",
+        "dir"
+      ]
+    },
+    "IngestionConfig": {
+      "properties": {
+        "source_config": {
+          "$ref": "#/$defs/SourceConfig"
+        },
+        "branches": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "file_ingestion_pubsub_topic_name": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "source_config",
+        "branches",
+        "file_ingestion_pubsub_topic_name"
+      ]
+    },
+    "InstanceConfig": {
+      "properties": {
+        "URL": {
+          "type": "string"
+        },
+        "backend_host_url": {
+          "type": "string"
+        },
+        "allowed_hosts": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "contact": {
+          "type": "string"
+        },
+        "invalid_param_char_regex": {
+          "type": "string"
+        },
+        "fetch_chrome_perf_anomalies": {
+          "type": "boolean"
+        },
+        "feedback_url": {
+          "type": "string"
+        },
+        "chat_url": {
+          "type": "string"
+        },
+        "help_url_override": {
+          "type": "string"
+        },
+        "bug_host_url": {
+          "type": "string"
+        },
+        "favorites": {
+          "$ref": "#/$defs/Favorites"
+        },
+        "filter_parent_traces": {
+          "type": "boolean"
+        },
+        "trace_sample_proportion": {
+          "type": "number"
+        },
+        "trace_format": {
+          "type": "string"
+        },
+        "need_alert_action": {
+          "type": "boolean"
+        },
+        "use_regression2_schema": {
+          "type": "boolean"
+        },
+        "auth_config": {
+          "$ref": "#/$defs/AuthConfig"
+        },
+        "data_store_config": {
+          "$ref": "#/$defs/DataStoreConfig"
+        },
+        "ingestion_config": {
+          "$ref": "#/$defs/IngestionConfig"
+        },
+        "git_repo_config": {
+          "$ref": "#/$defs/GitRepoConfig"
+        },
+        "notify_config": {
+          "$ref": "#/$defs/NotifyConfig"
+        },
+        "culprit_notify_config": {
+          "$ref": "#/$defs/CulpritNotifyConfig"
+        },
+        "anomaly_config": {
+          "$ref": "#/$defs/AnomalyConfig"
+        },
+        "query_config": {
+          "$ref": "#/$defs/QueryConfig"
+        },
+        "ga_measurement_id": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "URL",
+        "contact",
+        "data_store_config",
+        "ingestion_config",
+        "git_repo_config",
+        "notify_config"
+      ]
+    },
+    "NotifyConfig": {
+      "properties": {
+        "notifications": {
+          "type": "string"
+        },
+        "issue_tracker_api_key_secret_project": {
+          "type": "string"
+        },
+        "issue_tracker_api_key_secret_name": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "body": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "missing_subject": {
+          "type": "string"
+        },
+        "missing_body": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "notifications"
+      ]
+    },
+    "QueryConfig": {
+      "properties": {
+        "include_params": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "default_param_selections": {
+          "patternProperties": {
+            ".*": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "type": "object"
+        },
+        "default_url_values": {
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
+        "redis_config": {
+          "$ref": "#/$defs/RedisConfig"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "RedisConfig": {
+      "properties": {
+        "project": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        },
+        "instance": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "SourceConfig": {
+      "properties": {
+        "source_type": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "subscription": {
+          "type": "string"
+        },
+        "dl_topic": {
+          "type": "string"
+        },
+        "dl_subscription": {
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reject_if_name_matches": {
+          "type": "string"
+        },
+        "accept_if_name_matches": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object",
+      "required": [
+        "source_type",
+        "project",
+        "topic",
+        "subscription",
+        "sources"
+      ]
+    }
+  }
+}

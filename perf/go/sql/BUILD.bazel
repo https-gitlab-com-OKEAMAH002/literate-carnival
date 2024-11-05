@@ -1,0 +1,39 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "sql",
+    srcs = [
+        "schema.go",
+        "tables.go",
+    ],
+    importpath = "go.skia.org/infra/perf/go/sql",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//perf/go/alerts/sqlalertstore/schema",
+        "//perf/go/anomalygroup/sqlanomalygroupstore/schema",
+        "//perf/go/culprit/sqlculpritstore/schema",
+        "//perf/go/favorites/sqlfavoritestore/schema",
+        "//perf/go/git/schema",
+        "//perf/go/graphsshortcut/graphsshortcutstore/schema",
+        "//perf/go/regression/sqlregression2store/schema",
+        "//perf/go/regression/sqlregressionstore/schema",
+        "//perf/go/shortcut/sqlshortcutstore/schema",
+        "//perf/go/subscription/sqlsubscriptionstore/schema",
+        "//perf/go/tracestore/sqltracestore/schema",
+    ],
+)
+
+go_test(
+    name = "sql_test",
+    srcs = ["sql_test.go"],
+    deps = [
+        ":sql",
+        "//go/deepequal/assertdeep",
+        "//go/sql/pool",
+        "//go/sql/schema",
+        "//perf/go/sql/expectedschema",
+        "//perf/go/sql/sqltest",
+        "@com_github_stretchr_testify//require",
+    ],
+)

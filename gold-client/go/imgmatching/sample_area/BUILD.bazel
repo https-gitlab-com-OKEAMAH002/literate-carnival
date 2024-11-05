@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "sample_area",
+    srcs = ["sample_area.go"],
+    importpath = "go.skia.org/infra/gold-client/go/imgmatching/sample_area",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "sample_area_test",
+    srcs = ["sample_area_test.go"],
+    embed = [":sample_area"],
+    deps = [
+        "//golden/go/image/text",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

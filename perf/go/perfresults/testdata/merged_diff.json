@@ -1,0 +1,54 @@
+[
+  {
+    "type": "GenericSet",
+    "guid": "5b76decd-7ee9-4743-b24d-d7cc8eeb9c5f",
+    "values": [
+      "win"
+    ]
+  },
+  {
+    "type": "GenericSet",
+    "guid": "c7397d4d-1651-453c-8621-98c6cc5d2f38",
+    "values": [
+      "AMD64"
+    ]
+  },
+  {
+    "type": "GenericSet",
+    "guid": "1ed3b0d9-27ce-4a9f-a8c0-c116bccd1e0c",
+    "values": [
+      "tests_cube-sea?framebufferScale_1.0_heavyGpu_1_cubeScale_0.3_workTime_10"
+    ]
+  },
+  {
+    "type": "GenericSet",
+    "guid": "268e124b-4fd2-47b6-83e3-3094abd5efa1",
+    "values": [
+      "tests_cube-sea?frameBufferScale_1.4_heavyGpu_1_cubeScale_0.4_workTime_4_halfOnly_1_autorotate_1"
+    ]
+  },
+  {
+    "name": "memory:chrome:gpu_process:process_count",
+    "unit": "count_smallerIsBetter",
+    "sampleValues": [
+      1
+    ],
+    "diagnostics": {
+      "stories": "1ed3b0d9-27ce-4a9f-a8c0-c116bccd1e0c",
+      "architectures": "c7397d4d-1651-453c-8621-98c6cc5d2f38",
+      "osNames": "5b76decd-7ee9-4743-b24d-d7cc8eeb9c5f"
+    }
+  },
+  {
+    "name": "memory:chrome:gpu_process:process_count",
+    "unit": "count_smallerIsBetter",
+    "sampleValues": [
+      2
+    ],
+    "diagnostics": {
+      "stories": "268e124b-4fd2-47b6-83e3-3094abd5efa1",
+      "architectures": "c7397d4d-1651-453c-8621-98c6cc5d2f38",
+      "osNames": "5b76decd-7ee9-4743-b24d-d7cc8eeb9c5f"
+    }
+  }
+]

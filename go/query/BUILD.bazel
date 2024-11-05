@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "query",
+    srcs = ["query.go"],
+    importpath = "go.skia.org/infra/go/query",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/paramtools",
+        "//go/skerr",
+        "//go/util",
+    ],
+)
+
+go_test(
+    name = "query_test",
+    srcs = ["query_test.go"],
+    embed = [":query"],
+    deps = [
+        "//go/deepequal/assertdeep",
+        "//go/paramtools",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

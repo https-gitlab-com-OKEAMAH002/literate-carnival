@@ -1,0 +1,89 @@
+load("//infra-sk:index.bzl", "karma_test", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":theme-chooser-sk-demo",
+)
+
+sk_element(
+    name = "theme-chooser-sk",
+    sass_deps = [
+        "//infra-sk:themes_sass_lib",
+        "//elements-sk/modules/icons:icon-sk_sass_lib",
+    ],
+    sass_srcs = ["theme-chooser-sk.scss"],
+    sk_element_deps = ["//elements-sk/modules/icons/invert-colors-icon-sk"],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "theme-chooser-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "theme-chooser-sk-demo",
+    html_file = "theme-chooser-sk-demo.html",
+    sass_deps = [
+        "//infra-sk:themes_sass_lib",
+    ],
+    scss_entry_point = "theme-chooser-sk-demo.scss",
+    sk_element_deps = [
+        ":theme-chooser-sk",
+        "//infra-sk/modules/app-sk",
+        "//elements-sk/modules/checkbox-sk",
+        "//elements-sk/modules/collapse-sk",
+        "//elements-sk/modules/error-toast-sk",
+        "//elements-sk/modules/icons/alarm-icon-sk",
+        "//elements-sk/modules/icons/check-icon-sk",
+        "//elements-sk/modules/icons/create-icon-sk",
+        "//elements-sk/modules/icons/link-icon-sk",
+        "//elements-sk/modules/icons/menu-icon-sk",
+        "//elements-sk/modules/icons/warning-icon-sk",
+        "//elements-sk/modules/multi-select-sk",
+        "//elements-sk/modules/nav-button-sk",
+        "//elements-sk/modules/nav-links-sk",
+        "//elements-sk/modules/radio-sk",
+        "//elements-sk/modules/select-sk",
+        "//elements-sk/modules/spinner-sk",
+        "//elements-sk/modules/tabs-panel-sk",
+        "//elements-sk/modules/tabs-sk",
+        "//elements-sk/modules/toast-sk",
+        "//elements-sk/modules/icons/expand-less-icon-sk",
+        "//elements-sk/modules/icons/expand-more-icon-sk",
+        "//perf/modules/calendar-input-sk",
+    ],
+    ts_deps = [
+        "//elements-sk/modules:errormessage_ts_lib",
+        "//infra-sk/modules:gentheme_ts_lib",
+        "//infra-sk/modules:dom_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_entry_point = "theme-chooser-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "theme-chooser-sk_puppeteer_test",
+    src = "theme-chooser-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+karma_test(
+    name = "theme-chooser-sk_test",
+    src = "theme-chooser-sk_test.ts",
+    deps = [
+        ":theme-chooser-sk",
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//infra-sk/modules:test_util_ts_lib",
+    ],
+)

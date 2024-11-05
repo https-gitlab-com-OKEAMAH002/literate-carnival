@@ -1,0 +1,21 @@
+explore-multi-sk {
+  explore-simple-sk {
+    #plot {
+      height: 300px;
+    }
+  }
+  #menu {
+    margin: 1em;
+  }
+
+  label > span.prefix {
+    display: inline-block;
+    width: 100px;
+  }
+
+  label > input {
+    color: var(--on-surface);
+    background: var(--surface-1dp);
+    width: 64px;
+  }
+}

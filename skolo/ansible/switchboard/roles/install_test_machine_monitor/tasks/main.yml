@@ -1,0 +1,59 @@
+- name: Fail if platform unsupported.
+  fail:
+    msg: This platform is not yet supported.
+  when: "ansible_facts['system']|lower not in ['darwin', 'linux', 'win32nt']"
+
+- name: Load test_machine_monitor executables.
+  import_role:
+    name: get_ansible_binaries
+  vars:
+    get_ansible_binaries_application: test_machine_monitor
+    get_ansible_binaries_version: '{{ test_machine_monitor_version }}'
+
+# Necessary because this role instantiates get_ansible_binaries multiple times.
+- name: Remember directory where test_machine_monitor was copied.
+  set_fact:
+    test_machine_monitor_directory_path:
+      '{{ get_ansible_binaries_directory.path }}'
+
+- name: Copy test_machine_monitor exe's to lighttpd dir on every jumphost.
+  when: zone == 'skolo'
+  delegate_to: 127.0.0.1
+  run_once: true
+  command:
+    'rsync -rz {{ test_machine_monitor_directory_path }}/build chrome-bot@{{
+    item }}:/home/chrome-bot/www/test_machine_monitor'
+  loop: "{{groups['jumphosts']}}"
+
+- name: Load command_wrapper executables.
+  import_role:
+    name: get_ansible_binaries
+  vars:
+    get_ansible_binaries_application: command_wrapper
+    get_ansible_binaries_version: '{{ command_wrapper_version }}'
+
+# Necessary because this role instantiates get_ansible_binaries multiple times.
+- name: Remember directory where command_wrapper was copied.
+  set_fact:
+    command_wrapper_directory_path: '{{ get_ansible_binaries_directory.path }}'
+
+- name: Copy command_wrapper binaries to lighttpd dir on every jumphost.
+  when: zone == 'skolo'
+  delegate_to: 127.0.0.1
+  run_once: true
+  command:
+    'rsync -rz {{ command_wrapper_directory_path }}/build chrome-bot@{{ item
+    }}:/home/chrome-bot/www/command_wrapper'
+  loop: "{{groups['jumphosts']}}"
+
+- name: Install for Linux.
+  import_tasks: linux.yml
+  when: ansible_facts['system']|lower == 'linux'
+
+- name: Install for Mac.
+  import_tasks: mac.yml
+  when: ansible_facts['system']|lower == 'darwin'
+
+- name: Install for Win.
+  import_tasks: win.yml
+  when: ansible_facts['system']|lower == 'win32nt'

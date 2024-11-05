@@ -1,0 +1,48 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":sort-toggle-sk-demo",
+)
+
+sk_element(
+    name = "sort-toggle-sk",
+    sass_srcs = ["sort-toggle-sk.scss"],
+    sk_element_deps = [
+        "//elements-sk/modules/icons/arrow-drop-down-icon-sk",
+        "//elements-sk/modules/icons/arrow-drop-up-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:dom_ts_lib",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "sort-toggle-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "sort-toggle-sk-demo",
+    html_file = "sort-toggle-sk-demo.html",
+    sk_element_deps = [":sort-toggle-sk"],
+    ts_deps = [
+        "//infra-sk/modules:dom_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_entry_point = "sort-toggle-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "sort-toggle-sk_puppeteer_test",
+    src = "sort-toggle-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//:node_modules/puppeteer",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)

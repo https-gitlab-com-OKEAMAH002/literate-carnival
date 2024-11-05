@@ -1,0 +1,32 @@
+@import '../../../infra-sk/themes';
+
+index-page-sk {
+  padding: 16px;
+  display: block;
+
+  div.commit-or-cl {
+    padding: 10px;
+    background: var(--surface-1dp);
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+
+  .author-and-timestamp {
+    font-size: 90%;
+  }
+
+  table {
+    font-size: 90%;
+    margin-left: 16px;
+  }
+
+  table,
+  tr,
+  td {
+    background-color: var(--surface-1dp);
+  }
+
+  .binaries {
+    font-weight: bold;
+  }
+}

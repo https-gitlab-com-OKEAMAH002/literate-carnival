@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "read_values",
+    srcs = ["read_values.go"],
+    importpath = "go.skia.org/infra/pinpoint/go/read_values",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//cabe/go/backends",
+        "//go/skerr",
+        "//go/sklog",
+        "//perf/go/perfresults",
+        "@com_github_bazelbuild_remote_apis_sdks//go/pkg/client",
+        "@org_chromium_go_luci//swarming/proto/api_v2",
+    ],
+)
+
+go_test(
+    name = "read_values_test",
+    srcs = ["read_values_test.go"],
+    embed = [":read_values"],
+    deps = [
+        "//perf/go/perfresults",
+        "@com_github_stretchr_testify//assert",
+        "@org_chromium_go_luci//swarming/proto/api_v2",
+    ],
+)

@@ -1,0 +1,63 @@
+load("//infra-sk:index.bzl", "karma_test", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":expandable-textarea-sk-demo",
+)
+
+sk_element(
+    name = "expandable-textarea-sk",
+    sass_deps = ["//infra-sk:themes_sass_lib"],
+    sass_srcs = ["expandable-textarea-sk.scss"],
+    sk_element_deps = [
+        "//infra-sk/modules/autogrow-textarea-sk",
+        "//elements-sk/modules/collapse-sk",
+        "//elements-sk/modules/icons/expand-less-icon-sk",
+        "//elements-sk/modules/icons/expand-more-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "expandable-textarea-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "expandable-textarea-sk-demo",
+    html_file = "expandable-textarea-sk-demo.html",
+    sk_element_deps = [
+        "//infra-sk/modules/theme-chooser-sk",
+        ":expandable-textarea-sk",
+    ],
+    ts_entry_point = "expandable-textarea-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "expandable-textarea-sk_puppeteer_test",
+    src = "expandable-textarea-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+karma_test(
+    name = "expandable-textarea-sk_test",
+    src = "expandable-textarea-sk_test.ts",
+    deps = [
+        ":expandable-textarea-sk",
+        "//:node_modules/@types/chai",
+        "//:node_modules/@types/chai-dom",
+        "//:node_modules/chai",
+        "//:node_modules/chai-dom",
+        "//elements-sk/modules/collapse-sk",
+        "//infra-sk/modules:test_util_ts_lib",
+    ],
+)

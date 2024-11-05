@@ -1,0 +1,43 @@
+@import '../../../elements-sk/modules/styles/buttons';
+@import '../../../elements-sk/modules/colors';
+@import '../colors';
+@import '../../../infra-sk/themes.scss';
+
+.body-sk bulk-triage-sk,
+bulk-triage-sk {
+  .status button {
+    min-width: 0;
+    padding: 4px;
+    fill: var(--on-surface);
+
+    &.selected {
+      background-color: transparent;
+      border: none;
+      box-shadow: none;
+    }
+
+    &.positive {
+      &.selected check-circle-icon-sk {
+        fill: var(--triaged-positive);
+      }
+    }
+
+    &.negative {
+      &.selected cancel-icon-sk {
+        fill: var(--triaged-negative);
+      }
+    }
+
+    &.untriaged {
+      &.selected help-icon-sk {
+        fill: var(--untriaged);
+      }
+    }
+
+    &.closest {
+      &.selected view-agenda-icon-sk {
+        fill: var(--primary);
+      }
+    }
+  }
+}

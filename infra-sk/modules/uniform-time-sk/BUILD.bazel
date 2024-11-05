@@ -1,0 +1,59 @@
+load("//infra-sk:index.bzl", "karma_test", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":uniform-time-sk-demo",
+)
+
+sk_element(
+    name = "uniform-time-sk",
+    sass_deps = ["//elements-sk/modules/styles:buttons_sass_lib"],
+    sass_srcs = ["uniform-time-sk.scss"],
+    sk_element_deps = [
+        "//elements-sk/modules/icons/fast-rewind-icon-sk",
+        "//elements-sk/modules/icons/pause-icon-sk",
+        "//elements-sk/modules/icons/play-arrow-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//infra-sk/modules/uniform:uniform_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "uniform-time-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "uniform-time-sk-demo",
+    html_file = "uniform-time-sk-demo.html",
+    sk_element_deps = [":uniform-time-sk"],
+    ts_deps = ["//infra-sk/modules:dom_ts_lib"],
+    ts_entry_point = "uniform-time-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "uniform-time-sk_puppeteer_test",
+    src = "uniform-time-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+karma_test(
+    name = "uniform-time-sk_test",
+    src = "uniform-time-sk_test.ts",
+    deps = [
+        ":uniform-time-sk",
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//infra-sk/modules:dom_ts_lib",
+        "//infra-sk/modules:test_util_ts_lib",
+    ],
+)

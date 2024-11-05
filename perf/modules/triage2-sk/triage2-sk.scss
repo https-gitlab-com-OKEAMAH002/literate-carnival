@@ -1,0 +1,96 @@
+@import '../../../elements-sk/modules/styles/buttons';
+@import '../../../elements-sk/modules/colors';
+@import '../themes/themes.scss';
+
+// Legacy color scheme.
+triage2-sk {
+  .positive {
+    fill: var(--green);
+  }
+
+  .negative {
+    fill: var(--red);
+  }
+
+  .untriaged {
+    fill: var(--brown);
+  }
+
+  button:not([selected]) {
+    fill: #bbb;
+    background: #fff;
+  }
+
+  .positive:hover,
+  .negative:hover,
+  .untriaged:hover,
+  .positive[raised]:hover,
+  .negative[raised]:hover,
+  .untriaged[raised]:hover {
+    background: #ddd;
+  }
+
+  button {
+    padding: 0;
+  }
+}
+
+@import '../themes/themes.scss';
+
+// Theme based color scheme.
+.body-sk triage2-sk {
+  button {
+    background: var(--surface);
+    margin-right: 8px;
+    padding: 4px;
+  }
+
+  .positive {
+    fill: #388e3c;
+  }
+
+  .negative {
+    fill: #d32f2f;
+  }
+
+  .untriaged {
+    fill: #8d6e63;
+  }
+
+  button:not([selected]) {
+    fill: var(--on-disabled);
+    background: var(--surface-1dp);
+  }
+
+  .positive:hover,
+  .negative:hover,
+  .untriaged:hover,
+  .positive[raised]:hover,
+  .negative[raised]:hover,
+  .untriaged[raised]:hover {
+    background: var(--surface);
+  }
+}
+
+.body-sk.darkmode triage2-sk {
+  .positive {
+    fill: #4caf50;
+  }
+
+  .negative {
+    fill: #f44336;
+  }
+
+  .untriaged {
+    fill: #8d6e63;
+  }
+
+  button:not([selected]) {
+    fill: var(--disabled);
+  }
+
+  button:not([selected]) {
+    fill: var(--disabled);
+    background: var(--surface-1dp);
+  }
+}

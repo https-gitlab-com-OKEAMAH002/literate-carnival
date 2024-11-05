@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "alogin",
+    srcs = ["login.go"],
+    importpath = "go.skia.org/infra/go/alogin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/httputils",
+        "//go/roles",
+        "//go/sklog",
+    ],
+)
+
+go_test(
+    name = "alogin_test",
+    srcs = ["login_test.go"],
+    deps = [
+        ":alogin",
+        "//go/alogin/mocks",
+        "//go/roles",
+        "@com_github_stretchr_testify//require",
+    ],
+)

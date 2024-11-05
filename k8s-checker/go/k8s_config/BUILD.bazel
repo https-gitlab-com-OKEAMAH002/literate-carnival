@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "k8s_config",
+    srcs = ["k8s_config.go"],
+    importpath = "go.skia.org/infra/k8s-checker/go/k8s_config",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/skerr",
+        "//go/sklog",
+        "@io_k8s_api//apps/v1:apps",
+        "@io_k8s_api//batch/v1beta1",
+        "@io_k8s_api//core/v1:core",
+        "@io_k8s_api//policy/v1beta1",
+        "@io_k8s_api//rbac/v1:rbac",
+        "@io_k8s_sigs_yaml//:yaml",
+    ],
+)
+
+go_test(
+    name = "k8s_config_test",
+    srcs = ["k8s_config_test.go"],
+    embed = [":k8s_config"],
+    deps = ["@com_github_stretchr_testify//require"],
+)

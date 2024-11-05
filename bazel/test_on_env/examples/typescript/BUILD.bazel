@@ -1,0 +1,18 @@
+load("//infra-sk:index.bzl", "nodejs_test")
+
+nodejs_test(
+    name = "typescript_nodejs_test",
+    src = "typescript_nodejs_test.ts",
+    data = [
+        "//:puppeteer_rc",
+        "//puppeteer-tests:chrome",
+    ],
+    tags = ["manual"],
+    visibility = ["//bazel/test_on_env:__pkg__"],
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//:node_modules/puppeteer",
+        "//puppeteer-tests/chrome_downloader:chrome_executable_path_ts_lib",
+    ],
+)

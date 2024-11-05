@@ -1,0 +1,49 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":tricon2-sk-demo",
+)
+
+sk_element(
+    name = "tricon2-sk",
+    sass_deps = [
+        "//perf/modules/themes:themes_sass_lib",
+        "//elements-sk/modules/styles:buttons_sass_lib",
+        "//elements-sk/modules:colors_sass_lib",
+    ],
+    sass_srcs = ["tricon2-sk.scss"],
+    sk_element_deps = [
+        "//elements-sk/modules/icons/cancel-icon-sk",
+        "//elements-sk/modules/icons/check-circle-icon-sk",
+        "//elements-sk/modules/icons/help-icon-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "index.ts",
+        "tricon2-sk.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "tricon2-sk-demo",
+    html_file = "tricon2-sk-demo.html",
+    sk_element_deps = [":tricon2-sk"],
+    ts_entry_point = "tricon2-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "tricon2-sk_puppeteer_test",
+    src = "tricon2-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)

@@ -1,0 +1,65 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_element(
+    name = "alerts-page-sk",
+    sass_deps = [
+        "//perf/modules/themes:themes_sass_lib",
+        "//elements-sk/modules/styles:buttons_sass_lib",
+    ],
+    sass_srcs = ["alerts-page-sk.scss"],
+    sk_element_deps = [
+        "//infra-sk/modules/paramset-sk",
+        "//perf/modules/alert-config-sk",
+        "//elements-sk/modules/checkbox-sk",
+        "//elements-sk/modules/icons/create-icon-sk",
+        "//elements-sk/modules/icons/delete-icon-sk",
+        "//infra-sk/modules/alogin-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//perf/modules/alert:index_ts_lib",
+        "//perf/modules/errorMessage:index_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:hintable_ts_lib",
+        "//infra-sk/modules:jsonorthrow_ts_lib",
+        "//infra-sk/modules:query_ts_lib",
+        "//infra-sk/modules/json:index_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "alerts-page-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_page(
+    name = "alerts-page-sk-demo",
+    html_file = "alerts-page-sk-demo.html",
+    sk_element_deps = [
+        ":alerts-page-sk",
+        "//elements-sk/modules/error-toast-sk",
+    ],
+    ts_deps = [
+        "//perf/modules/json:index_ts_lib",
+        "//:node_modules/fetch-mock",
+    ],
+    ts_entry_point = "alerts-page-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "alerts-page-sk_puppeteer_test",
+    src = "alerts-page-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":alerts-page-sk-demo",
+)

@@ -1,0 +1,41 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("//bazel/go:go_test.bzl", "go_test")
+
+go_library(
+    name = "parser",
+    srcs = ["parser.go"],
+    importpath = "go.skia.org/infra/perf/go/ingest/parser",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//go/metrics2",
+        "//go/paramtools",
+        "//go/query",
+        "//go/skerr",
+        "//go/sklog",
+        "//go/util",
+        "//perf/go/config",
+        "//perf/go/file",
+        "//perf/go/ingest/format",
+        "//perf/go/types",
+        "@io_opencensus_go//trace",
+    ],
+)
+
+go_test(
+    name = "parser_test",
+    srcs = ["parser_test.go"],
+    data = glob(["testdata/**"]) + ["//perf:configs"],
+    embed = [":parser"],
+    deps = [
+        "//go/paramtools",
+        "//go/query",
+        "//go/testutils",
+        "//perf/go/config",
+        "//perf/go/config/validate",
+        "//perf/go/file",
+        "//perf/go/ingest/format",
+        "//perf/go/types",
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

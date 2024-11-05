@@ -1,0 +1,28 @@
+@import '../../../elements-sk/modules/checkbox-sk/checkbox-sk';
+@import '../../../elements-sk/modules/multi-select-sk/multi-select-sk';
+@import '../../themes.scss';
+
+query-values-sk {
+  #regex ~ #values,
+  #regex ~ .filtering,
+  #regex[checked] + #regexValue {
+    display: inline-block;
+  }
+
+  #regex[checked] ~ #values,
+  #regex[checked] ~ .filtering,
+  #regex + #regexValue {
+    display: none;
+  }
+
+  multi-select-sk {
+    max-height: 20em;
+    max-width: 40em;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .filtering {
+    margin-top: 1em;
+  }
+}

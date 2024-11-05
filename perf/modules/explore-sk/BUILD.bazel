@@ -1,0 +1,54 @@
+load("//infra-sk:index.bzl", "sk_demo_page_server", "sk_element", "sk_element_puppeteer_test", "sk_page")
+
+sk_element(
+    name = "explore-sk",
+    sk_element_deps = [
+        "//perf/modules/explore-simple-sk",
+    ],
+    ts_deps = [
+        "//elements-sk/modules:define_ts_lib",
+        "//infra-sk/modules:hintable_ts_lib",
+        "//infra-sk/modules:statereflector_ts_lib",
+        "//infra-sk/modules/ElementSk:index_ts_lib",
+        "//:node_modules/lit-html",
+    ],
+    ts_srcs = [
+        "explore-sk.ts",
+        "index.ts",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+sk_demo_page_server(
+    name = "demo_page_server",
+    sk_page = ":explore-sk-demo",
+)
+
+sk_page(
+    name = "explore-sk-demo",
+    html_file = "explore-sk-demo.html",
+    scss_entry_point = "explore-sk-demo.scss",
+    sk_element_deps = [
+        "//perf/modules/explore-simple-sk",
+        "//elements-sk/modules/error-toast-sk",
+        ":explore-sk",
+    ],
+    ts_deps = [
+        "//infra-sk/modules/json:index_ts_lib",
+        "//infra-sk/modules:dom_ts_lib",
+        "//perf/modules/json:index_ts_lib",
+        "//:node_modules/fetch-mock",
+    ],
+    ts_entry_point = "explore-sk-demo.ts",
+)
+
+sk_element_puppeteer_test(
+    name = "explore-sk_puppeteer_test",
+    src = "explore-sk_puppeteer_test.ts",
+    sk_demo_page_server = ":demo_page_server",
+    deps = [
+        "//:node_modules/@types/chai",
+        "//:node_modules/chai",
+        "//puppeteer-tests:util_ts_lib",
+    ],
+)

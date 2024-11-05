@@ -1,0 +1,83 @@
+{{- $svcAcctSplit := .serviceAccount | split "@" -}}{{- $svcAcct := $svcAcctSplit._0 -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: autoroll-be-{{.rollerName}}
+  namespace: {{$svcAcct}}
+spec:
+  serviceName: "autoroll-be-{{.rollerName}}"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autoroll-be-{{.rollerName}}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: autoroll-be-{{.rollerName}} # Pod template's label selector
+        appgroup: autoroll
+        owner-primary: {{.ownerPrimary}}
+        owner-secondary: {{.ownerSecondary}}
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 2000 # aka skia
+        fsGroup: 2000 # aka skia
+      containers:
+        - name: autoroll-be-{{.rollerName}}
+          image: {{.kubernetes.image}}
+          command: ["luci-auth"]
+          args:
+            - "context"
+            - "-service-account-json"
+            - ":gce"
+            - "--"
+            - "/usr/local/bin/autoroll-be"
+            - "--config={{.configBase64}}"
+            - "--firestore_instance=production"
+            - "--port=:8000"
+            - "--prom_port=:20000"
+            - "--workdir={{if .kubernetes.disk}}/data{{else}}/tmp{{end}}"
+            {{range .kubernetes.extraFlags}}- "{{.}}"
+            {{end}}- "--namespaced-email-service"
+          ports:
+            - containerPort: 8000
+            - containerPort: 20000
+              name: prom
+          volumeMounts:{{if .kubernetes.disk}}
+            - name: autoroll-be-{{.rollerName}}-storage
+              mountPath: /data{{end}}
+          resources:
+            requests:
+              memory: "{{.kubernetes.memory}}"
+              cpu: {{.kubernetes.cpu}}
+              ephemeral-storage: '1G'
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+            initialDelaySeconds: {{.kubernetes.readinessInitialDelaySeconds}}
+            periodSeconds: {{.kubernetes.readinessPeriodSeconds}}
+            failureThreshold: {{.kubernetes.readinessFailureThreshold}}
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+{{- if .kubernetes.disk}}
+  volumeClaimTemplates:
+    - metadata:
+        name: autoroll-be-{{.rollerName}}-storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{.kubernetes.disk}}
+{{- end}}

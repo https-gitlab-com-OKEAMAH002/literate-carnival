@@ -1,0 +1,46 @@
+@import '../../../elements-sk/modules/styles/buttons';
+@import '../../../elements-sk/modules/colors';
+
+@import '../themes/themes.scss';
+
+tricon2-sk {
+  check-circle-icon-sk {
+    fill: var(--green);
+  }
+
+  cancel-icon-sk {
+    fill: var(--red);
+  }
+
+  help-icon-sk {
+    fill: var(--brown);
+  }
+}
+
+.body-sk tricon2-sk {
+  check-circle-icon-sk {
+    fill: #388e3c;
+  }
+
+  cancel-icon-sk {
+    fill: #d32f2f;
+  }
+
+  help-icon-sk {
+    fill: #8d6e63;
+  }
+}
+
+.body-sk.darkmode tricon2-sk {
+  check-circle-icon-sk {
+    fill: #4caf50;
+  }
+
+  cancel-icon-sk {
+    fill: #f44336;
+  }
+
+  help-icon-sk {
+    fill: #a1887f;
+  }
+}

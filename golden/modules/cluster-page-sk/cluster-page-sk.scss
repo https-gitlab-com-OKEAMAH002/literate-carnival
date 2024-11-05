@@ -1,0 +1,16 @@
+@import '../../../elements-sk/modules/colors';
+
+cluster-page-sk {
+  .page-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  digest-details-sk {
+    max-width: 1000px;
+  }
+
+  search-controls-sk .more-filters {
+    display: none;
+  }
+}

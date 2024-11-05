@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "sample_lib",
+    srcs = ["main.go"],
+    importpath = "go.skia.org/infra/pinpoint/go/workflows/sample",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//go/skerr",
+        "//go/sklog",
+        "//pinpoint/go/midpoint",
+        "//pinpoint/go/workflows",
+        "//pinpoint/go/workflows/catapult",
+        "//pinpoint/go/workflows/internal",
+        "//pinpoint/proto/v1:proto",
+        "@com_github_davecgh_go_spew//spew",
+        "@com_github_google_uuid//:uuid",
+        "@io_temporal_go_sdk//client",
+        "@io_temporal_go_sdk//temporal",
+        "@org_chromium_go_luci//swarming/proto/api_v2",
+    ],
+)
+
+go_binary(
+    name = "sample",
+    embed = [":sample_lib"],
+    visibility = ["//visibility:public"],
+)

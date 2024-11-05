@@ -1,0 +1,15 @@
+@import '../../themes.scss';
+
+alogin-sk {
+  display: inline-block;
+
+  .logInOut {
+    margin-left: 8px;
+  }
+
+  .email,
+  .logInOut {
+    font-size: 15px;
+    color: var(--primary);
+  }
+}
